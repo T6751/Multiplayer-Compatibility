@@ -1,0 +1,15 @@
+{
+  "name": "multiplayer-compatibility",
+  "version": "1.0.0",
+  "description": "Compatibility mod for RimWorld Multiplayer",
+  "private": true,
+  "scripts": {
+    "build": "dotnet build Source/Multiplayer_Compat.csproj -c Release",
+    "build:debug": "dotnet build Source/Multiplayer_Compat.csproj -c Debug",
+    "build:clean": "dotnet clean && dotnet build Source/Multiplayer_Compat.csproj -c Release",
+    "clean": "dotnet clean",
+    "restore": "dotnet restore",
+    "release": "bash release_bundler.sh",
+    "release:win": "powershell -ExecutionPolicy Bypass -File release_bundler.ps1"
+  }
+}
