@@ -11,6 +11,8 @@ namespace Multiplayer.Compat
     /// during ritual start, which happens in a synced context but job creation is not synced.
     /// Also fixes desync caused by CompRitualEffect_IntervalSpawnCircle.SpawnPos using RNG without synchronization.
     /// Also fixes desync caused by ThinkNode_PrioritySorter.TryIssueJobPackage using RNG for job priority sorting.
+    /// Also fixes desync caused by RitualVisualEffectComp.SpawnFleck using RNG without synchronization.
+    /// Also fixes desync caused by HediffGiver_RandomAgeCurved.OnIntervalPassed using RNG without synchronization.
     internal class VanillaRituals
     {
         private static readonly HashSet<LordToil_Ritual> pendingUpdates = new HashSet<LordToil_Ritual>();
@@ -26,6 +28,16 @@ namespace Multiplayer.Compat
             // ThinkNode_PrioritySorter uses Rand.Range to randomly sort jobs with equal priority,
             // which causes desyncs as different clients get different random values
             PatchingUtilities.PatchPushPopRand("Verse.AI.ThinkNode_PrioritySorter:TryIssueJobPackage");
+
+            // Fix RNG desync in ritual visual effect fleck spawning
+            // RitualVisualEffectComp.SpawnFleck uses FloatRange.get_RandomInRange() which calls Rand.Range
+            // without synchronization, causing desyncs when different clients get different random values
+            PatchingUtilities.PatchPushPopRand("RimWorld.RitualVisualEffectComp:SpawnFleck");
+
+            // Fix RNG desync in random age-based hediff events
+            // HediffGiver_RandomAgeCurved.OnIntervalPassed uses Rand.MTBEventOccurs without synchronization,
+            // causing desyncs when different clients get different random values for health events
+            PatchingUtilities.PatchPushPopRand("Verse.HediffGiver_RandomAgeCurved:OnIntervalPassed");
         }
 
         [MpCompatPrefix("RimWorld.LordToil_Ritual", nameof(LordToil_Ritual.UpdateAllDuties))]
