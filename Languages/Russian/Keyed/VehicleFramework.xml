@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<LanguageData>
+
+  <MpVehicleCaravanFormingSession>Сессия формирования каравана транспорта</MpVehicleCaravanFormingSession>
+  <MpVehicleCargoLoadingSession>Сессия загрузки груза транспорта</MpVehicleCargoLoadingSession>
+  <MpVehicleAerialLandingSession>Сессия посадки воздушного транспорта</MpVehicleAerialLandingSession>
+
+  <!-- Used for float menu to display the list of vehicles that still need to land. -->
+  <MpVehiclesWaitingToLand>Транспорт в ожидании посадки</MpVehiclesWaitingToLand>
+
+</LanguageData>
