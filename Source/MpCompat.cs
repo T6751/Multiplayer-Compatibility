@@ -25,6 +25,7 @@ namespace Multiplayer.Compat
             MpCompatLoader.Load(content);
             // Load vanilla fixes that don't require a mod
             new VanillaRituals();
+            new VanillaFreezeManager();
             harmony.PatchAll();
         }
 

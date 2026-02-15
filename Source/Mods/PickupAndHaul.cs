@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Reflection.Emit;
 using HarmonyLib;
+using Multiplayer.API;
 using RimWorld;
 using Verse;
 
@@ -19,6 +20,10 @@ namespace Multiplayer.Compat
             // Sorts the ListerHaulables list from UI, causes issues
             MpCompat.harmony.Patch(AccessTools.Method("PickUpAndHaul.WorkGiver_HaulToInventory:PotentialWorkThingsGlobal"),
                 transpiler: new HarmonyMethod(typeof(PickupAndHaul), nameof(Transpiler)));
+
+            // Fix desync: CheckIfPawnShouldUnloadInventory creates jobs with GetNextJobID() in unsynced context
+            // Patch the postfix that calls it to prevent job creation in unsynced context
+            PatchingUtilities.PatchCancelInInterface("PickUpAndHaul.HarmonyPatches:DropUnusedInventory_PostFix");
         }
 
         private static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instr)
