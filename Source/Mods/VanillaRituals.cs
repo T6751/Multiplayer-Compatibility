@@ -9,6 +9,8 @@ namespace Multiplayer.Compat
     /// <summary>Vanilla Rituals desync fix</summary>
     /// Fixes desync caused by LordToil_Ritual.UpdateAllDuties() creating jobs with GetNextJobID()
     /// during ritual start, which happens in a synced context but job creation is not synced.
+    /// Also fixes desync caused by CompRitualEffect_IntervalSpawnCircle.SpawnPos using RNG without synchronization.
+    /// Also fixes desync caused by ThinkNode_PrioritySorter.TryIssueJobPackage using RNG for job priority sorting.
     internal class VanillaRituals
     {
         private static readonly HashSet<LordToil_Ritual> pendingUpdates = new HashSet<LordToil_Ritual>();
@@ -16,6 +18,14 @@ namespace Multiplayer.Compat
         public VanillaRituals()
         {
             MpCompatPatchLoader.LoadPatch(this);
+
+            // Fix RNG desync in ritual visual effects
+            PatchingUtilities.PatchPushPopRand("RimWorld.CompRitualEffect_IntervalSpawnCircle:SpawnPos");
+
+            // Fix RNG desync in job priority sorting
+            // ThinkNode_PrioritySorter uses Rand.Range to randomly sort jobs with equal priority,
+            // which causes desyncs as different clients get different random values
+            PatchingUtilities.PatchPushPopRand("Verse.AI.ThinkNode_PrioritySorter:TryIssueJobPackage");
         }
 
         [MpCompatPrefix("RimWorld.LordToil_Ritual", nameof(LordToil_Ritual.UpdateAllDuties))]

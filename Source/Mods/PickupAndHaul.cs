@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Reflection.Emit;
@@ -22,7 +22,11 @@ namespace Multiplayer.Compat
                 transpiler: new HarmonyMethod(typeof(PickupAndHaul), nameof(Transpiler)));
 
             // Fix desync: CheckIfPawnShouldUnloadInventory creates jobs with GetNextJobID() in unsynced context
-            // Patch the postfix that calls it to prevent job creation in unsynced context
+            // The original patch used PatchCancelInInterface, but the issue is that the method is called
+            // from simulation during pawn tick, not from interface. We need to prevent job creation
+            // when called from interface (to avoid UI issues) but allow it in simulation.
+            // However, the real issue is that GetNextJobID() is called during pawn tick which should be synced.
+            // The problem might be timing-related, so we keep the original patch for interface cancellation.
             PatchingUtilities.PatchCancelInInterface("PickUpAndHaul.HarmonyPatches:DropUnusedInventory_PostFix");
         }
 
